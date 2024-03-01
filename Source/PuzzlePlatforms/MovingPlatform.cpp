@@ -17,7 +17,13 @@ AMovingPlatform::AMovingPlatform()
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Display, TEXT("MovingPlatform BeginPlay"));		
+	UE_LOG(LogTemp, Display, TEXT("MovingPlatform BeginPlay"));
+
+	if (HasAuthority())
+	{
+		SetReplicates(true);
+		SetReplicateMovement(true);
+	}
 }
 
 void AMovingPlatform::Tick(float DeltaSeconds)
@@ -30,5 +36,5 @@ void AMovingPlatform::Tick(float DeltaSeconds)
 		FVector Location = GetActorLocation();
 		Location += FVector(Speed * DeltaSeconds, 0, 0);
 		SetActorLocation(Location);
-	}	
+	}
 }
