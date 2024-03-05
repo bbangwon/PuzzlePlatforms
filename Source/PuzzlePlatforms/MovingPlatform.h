@@ -21,10 +21,13 @@ public:
 	AMovingPlatform();
 	virtual void Tick(float DeltaSeconds) override;
 
-private:
 	UPROPERTY(EditAnywhere)
 	float Speed = 20.0f;
 
 	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true))
 	FVector TargetLocation;
+
+private:
+	FVector GlobalTargetLocation;
+	FVector GlobalStartLocation;
 };
