@@ -35,23 +35,44 @@ void AMovingPlatform::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	//서버에서만 실행
-	if (HasAuthority())
+	if (ActiveTriggers > 0)
 	{
-		FVector Location = GetActorLocation();
-		FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
-
-		//움직인 벡터의 길이를 비교하여 방향을 바꿔줌
-		float JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
-		float JourneyTravelled = (Location - GlobalStartLocation).Size();
-		if (JourneyTravelled >= JourneyLength)
+		//서버에서만 실행
+		if (HasAuthority())
 		{
-			FVector Temp = GlobalStartLocation;
-			GlobalStartLocation = GlobalTargetLocation;
-			GlobalTargetLocation = Temp;
+			MovePlatform(DeltaSeconds);
 		}
+	}
+}
 
-		Location += Speed * DeltaSeconds * Direction;
-		SetActorLocation(Location);
+void AMovingPlatform::MovePlatform(float DeltaSeconds)
+{
+	FVector Location = GetActorLocation();
+	FVector Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
+
+	//움직인 벡터의 길이를 비교하여 방향을 바꿔줌
+	float JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
+	float JourneyTravelled = (Location - GlobalStartLocation).Size();
+	if (JourneyTravelled >= JourneyLength)
+	{
+		FVector Temp = GlobalStartLocation;
+		GlobalStartLocation = GlobalTargetLocation;
+		GlobalTargetLocation = Temp;
+	}
+
+	Location += Speed * DeltaSeconds * Direction;
+	SetActorLocation(Location);
+}
+
+void AMovingPlatform::AddActiveTrigger()
+{
+	ActiveTriggers++;
+}
+
+void AMovingPlatform::RemoveActiveTrigger()
+{
+	if (ActiveTriggers > 0)
+	{
+		ActiveTriggers--;
 	}
 }
