@@ -5,8 +5,6 @@
 
 AMovingPlatform::AMovingPlatform()
 {
-	UE_LOG(LogTemp, Display, TEXT("MovingPlatform 생성자 실행"));
-	
 	//Tick함수를 사용하기 위해 true로 설정
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -17,7 +15,6 @@ AMovingPlatform::AMovingPlatform()
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Display, TEXT("MovingPlatform BeginPlay"));
 
 	//서버에서만 실행 : 클라이언트로 복제 설정
 	if (HasAuthority())
