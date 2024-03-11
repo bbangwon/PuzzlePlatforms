@@ -19,4 +19,10 @@ public:
 
 	virtual void Init() override;
 
+	UFUNCTION(Exec)
+	void Host();
+
+	UFUNCTION(Exec)
+	void Join(const FString& Address);
+
 };

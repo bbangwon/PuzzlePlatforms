@@ -14,3 +14,15 @@ void UPuzzlePlatformsGameInstance::Init()
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("GameInstance Init"));
 }
+
+void UPuzzlePlatformsGameInstance::Host()
+{
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
+}
+
+void UPuzzlePlatformsGameInstance::Join(const FString& Address)
+{
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
+}
