@@ -15,7 +15,7 @@ void UPuzzlePlatformsGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("GameInstance Init"));
 }
 
-void UPuzzlePlatformsGameInstance::Host()
+void UPuzzlePlatformsGameInstance::Host() const
 {
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
@@ -27,8 +27,13 @@ void UPuzzlePlatformsGameInstance::Host()
 	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");
 }
 
-void UPuzzlePlatformsGameInstance::Join(const FString& Address)
+void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
 {
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if(!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }

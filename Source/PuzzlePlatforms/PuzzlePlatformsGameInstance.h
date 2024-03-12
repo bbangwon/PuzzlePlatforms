@@ -20,9 +20,9 @@ public:
 	virtual void Init() override;
 
 	UFUNCTION(Exec)
-	void Host();
+	void Host() const;
 
 	UFUNCTION(Exec)
-	void Join(const FString& Address);
+	void Join(const FString& Address) const;
 
 };
