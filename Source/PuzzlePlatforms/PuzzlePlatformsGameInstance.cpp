@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlatformTrigger.h"
 
-#include "Blueprint/WidgetBlueprintLibrary.h"
+//#include "Blueprint/WidgetBlueprintLibrary.h"
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
