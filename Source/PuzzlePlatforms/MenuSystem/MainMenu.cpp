@@ -9,6 +9,8 @@ bool UMainMenu::Initialize()
 	bool bSuccess = Super::Initialize();
 	if(!bSuccess) return false;
 
+	MenuInterface = Cast<IMenuInterface>(GetWorld()->GetGameInstance());
+
 	if(!ensure(Host != nullptr)) return false;
 	Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 
@@ -17,7 +19,10 @@ bool UMainMenu::Initialize()
 
 void UMainMenu::HostServer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("호스트 서버를 설정해야지!"));
+	if (MenuInterface != nullptr)
+	{
+		MenuInterface->Host();
+	}
 }
 
 
