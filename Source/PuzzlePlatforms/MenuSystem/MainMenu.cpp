@@ -7,14 +7,17 @@
 bool UMainMenu::Initialize()
 {
 	bool bSuccess = Super::Initialize();
-	if(!bSuccess) return false;
-
-	MenuInterface = Cast<IMenuInterface>(GetWorld()->GetGameInstance());
+	if(!bSuccess) return false;	
 
 	if(!ensure(Host != nullptr)) return false;
 	Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 
 	return true;
+}
+
+void UMainMenu::SetMenuInterface(IMenuInterface* Interface)
+{
+	this->MenuInterface = Interface;
 }
 
 void UMainMenu::HostServer()
