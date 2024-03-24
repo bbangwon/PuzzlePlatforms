@@ -18,8 +18,13 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 public:
 	void SetMenuInterface(IMenuInterface* Interface);
 
+	void Setup();
+	void Teardown();	
+
 protected:
-	virtual bool Initialize() override;
+	virtual bool Initialize() override;	
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))

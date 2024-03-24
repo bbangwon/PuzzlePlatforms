@@ -7,8 +7,6 @@
 #include "PlatformTrigger.h"
 #include "MenuSystem/MainMenu.h"
 
-//#include "Blueprint/WidgetBlueprintLibrary.h"
-
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	//생성자는 언리얼 에디터에서도 실행되지만, Init은 게임이 시작될 때 실행된다.
@@ -29,32 +27,21 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if(!ensure(MenuClass != nullptr)) return;
 
-	UMainMenu* Menu = CreateWidget<UMainMenu>(this, MenuClass);
-	if(!ensure(Menu != nullptr)) return;
+	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
+	if(!ensure(MainMenu != nullptr)) return;
 
-	Menu->AddToViewport();
-
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-	if (!ensure(PlayerController != nullptr)) return;
-
-	FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(Menu->TakeWidget());
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	PlayerController->SetInputMode(InputModeData);
-	 
-	//이 함수 하나로 처리 할수도 있음 
-	//UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PlayerController, Menu);
-
-	//마우스 커서를 보이게 한다.
-	PlayerController->bShowMouseCursor = true;
-
-	Menu->SetMenuInterface(this);
+	MainMenu->Setup();
+	MainMenu->SetMenuInterface(this);
 }
 
 
 void UPuzzlePlatformsGameInstance::Host() const
 {
+	if(MainMenu != nullptr)
+	{
+		MainMenu->Teardown();
+	}
+
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
 

@@ -4,10 +4,14 @@
 #include "MainMenu.h"
 #include "Components/Button.h"
 
+//#include "Blueprint/WidgetBlueprintLibrary.h"
+
 bool UMainMenu::Initialize()
 {
 	bool bSuccess = Super::Initialize();
 	if(!bSuccess) return false;	
+
+	UE_LOG(LogTemp, Warning, TEXT("MainMenu Initialze"));
 
 	if(!ensure(Host != nullptr)) return false;
 	Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
@@ -15,9 +19,68 @@ bool UMainMenu::Initialize()
 	return true;
 }
 
+//AddToViewport() 함수가 호출되면 호출된다.
+void UMainMenu::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	UE_LOG(LogTemp, Warning, TEXT("MainMenu NativeConstruct"));
+}
+
+//RemoveFromViewport() 함수가 호출되면 호출된다.
+void UMainMenu::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	UE_LOG(LogTemp, Warning, TEXT("MainMenu NativeDestruct"));
+}
+
 void UMainMenu::SetMenuInterface(IMenuInterface* Interface)
 {
 	this->MenuInterface = Interface;
+}
+
+void UMainMenu::Setup()
+{
+	AddToViewport();
+
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr)) return;
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	FInputModeUIOnly InputModeData;
+	InputModeData.SetWidgetToFocus(TakeWidget());
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	PlayerController->SetInputMode(InputModeData);
+
+	//이 함수 하나로 처리 할수도 있음 
+	//UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PlayerController, this);
+
+	//마우스 커서를 보이게 한다.
+	PlayerController->bShowMouseCursor = true;
+
+}
+
+void UMainMenu::Teardown()
+{	
+	RemoveFromViewport();
+
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr)) return;
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	FInputModeGameOnly InputModeData;
+	PlayerController->SetInputMode(InputModeData);
+
+	//이 함수 하나로 처리 할수도 있음 
+	//UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController, this);
+
+	PlayerController->bShowMouseCursor = false;
 }
 
 void UMainMenu::HostServer()
