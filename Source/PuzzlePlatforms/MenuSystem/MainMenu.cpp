@@ -3,6 +3,7 @@
 
 #include "MainMenu.h"
 #include "Components/Button.h"
+#include "Components/WidgetSwitcher.h"
 
 //#include "Blueprint/WidgetBlueprintLibrary.h"
 
@@ -13,13 +14,19 @@ bool UMainMenu::Initialize()
 
 	UE_LOG(LogTemp, Warning, TEXT("MainMenu Initialze"));
 
-	if(!ensure(Host != nullptr)) return false;
-	Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+	if(!ensure(HostButton != nullptr)) return false;
+	HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);	
+
+	if (!ensure(JoinButton != nullptr)) return false;
+	JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
+
+	if (!ensure(CancelJoinMenuButton != nullptr)) return false;
+	CancelJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 
 	return true;
 }
 
-//AddToViewport() ÇÔ¼ö°¡ È£ÃâµÇ¸é È£ÃâµÈ´Ù.
+//AddToViewport() í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ë©´ í˜¸ì¶œëœë‹¤.
 void UMainMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -27,7 +34,7 @@ void UMainMenu::NativeConstruct()
 	UE_LOG(LogTemp, Warning, TEXT("MainMenu NativeConstruct"));
 }
 
-//RemoveFromViewport() ÇÔ¼ö°¡ È£ÃâµÇ¸é È£ÃâµÈ´Ù.
+//RemoveFromViewport() í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ë©´ í˜¸ì¶œëœë‹¤.
 void UMainMenu::NativeDestruct()
 {
 	Super::NativeDestruct();
@@ -56,10 +63,10 @@ void UMainMenu::Setup()
 
 	PlayerController->SetInputMode(InputModeData);
 
-	//ÀÌ ÇÔ¼ö ÇÏ³ª·Î Ã³¸® ÇÒ¼öµµ ÀÖÀ½ 
+	//ì´ í•¨ìˆ˜ í•˜ë‚˜ë¡œ ì²˜ë¦¬ í• ìˆ˜ë„ ìˆìŒ 
 	//UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PlayerController, this);
 
-	//¸¶¿ì½º Ä¿¼­¸¦ º¸ÀÌ°Ô ÇÑ´Ù.
+	//ë§ˆìš°ìŠ¤ ì»¤ì„œë¥¼ ë³´ì´ê²Œ í•œë‹¤.
 	PlayerController->bShowMouseCursor = true;
 
 }
@@ -77,7 +84,7 @@ void UMainMenu::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 
-	//ÀÌ ÇÔ¼ö ÇÏ³ª·Î Ã³¸® ÇÒ¼öµµ ÀÖÀ½ 
+	//ì´ í•¨ìˆ˜ í•˜ë‚˜ë¡œ ì²˜ë¦¬ í• ìˆ˜ë„ ìˆìŒ 
 	//UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController, this);
 
 	PlayerController->bShowMouseCursor = false;
@@ -89,6 +96,22 @@ void UMainMenu::HostServer()
 	{
 		MenuInterface->Host();
 	}
+}
+
+void UMainMenu::OpenJoinMenu()
+{
+	if (!ensure(MenuSwitcher != nullptr)) return;
+	if (!ensure(JoinMenu != nullptr)) return;
+
+	MenuSwitcher->SetActiveWidget(JoinMenu);
+}
+
+void UMainMenu::OpenMainMenu()
+{
+	if (!ensure(MenuSwitcher != nullptr)) return;
+	if (!ensure(MainMenu != nullptr)) return;
+
+	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 
 
