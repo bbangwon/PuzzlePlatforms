@@ -27,7 +27,7 @@ public:
 	virtual void Host() const override;
 
 	UFUNCTION(Exec)
-	void Join(const FString& Address) const;
+	virtual void Join(const FString& Address) const override;
 
 private:
 	TSubclassOf<class UUserWidget> MenuClass;
