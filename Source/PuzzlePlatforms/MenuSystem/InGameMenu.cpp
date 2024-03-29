@@ -2,4 +2,31 @@
 
 
 #include "InGameMenu.h"
+#include "Components/Button.h"
+
+
+bool UInGameMenu::Initialize()
+{
+	bool Success = Super::Initialize();
+	if (!Success) return false;
+
+	if (!ensure(CancelButton != nullptr)) return false;
+	CancelButton->OnClicked.AddDynamic(this, &UInGameMenu::CancelPressed);
+
+	if (!ensure(QuitButton != nullptr)) return false;
+	QuitButton->OnClicked.AddDynamic(this, &UInGameMenu::QuitPressed);
+
+	return false;
+}
+
+void UInGameMenu::CancelPressed()
+{
+	Teardown();
+}
+
+void UInGameMenu::QuitPressed()
+{
+	UE_LOG(LogTemp, Display, TEXT("Quit Game!"));
+}
+
 

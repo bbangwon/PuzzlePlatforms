@@ -3,18 +3,22 @@
 
 #include "PuzzlePlatformsGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
-#include "Blueprint/UserWidget.h"
 #include "PlatformTrigger.h"
-#include "MenuSystem/MainMenu.h"
+#include "MenuSystem/MenuWidget.h"
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	//생성자는 언리얼 에디터에서도 실행되지만, Init은 게임이 시작될 때 실행된다.
 	
-	ConstructorHelpers::FClassFinder<UMainMenu> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
+	ConstructorHelpers::FClassFinder<UMenuWidget> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
 	if(!ensure(MenuBPClass.Class != nullptr)) return;
 
 	MenuClass = MenuBPClass.Class;	
+
+	ConstructorHelpers::FClassFinder<UMenuWidget> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
+	if(!ensure(InGameMenuBPClass.Class != nullptr)) return;
+
+	InGameMenuClass = InGameMenuBPClass.Class;
 }
 
 void UPuzzlePlatformsGameInstance::Init()
@@ -27,11 +31,22 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if(!ensure(MenuClass != nullptr)) return;
 
-	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
+	MainMenu = CreateWidget<UMenuWidget>(this, MenuClass);
 	if(!ensure(MainMenu != nullptr)) return;
 
 	MainMenu->Setup();
 	MainMenu->SetMenuInterface(this);
+}
+
+void UPuzzlePlatformsGameInstance::LoadInGameMenu()
+{
+	if(!ensure(InGameMenuClass != nullptr)) return;
+
+	InGameMenu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
+	if(!ensure(InGameMenu != nullptr)) return;
+
+	InGameMenu->Setup();
+	InGameMenu->SetMenuInterface(this);
 }
 
 

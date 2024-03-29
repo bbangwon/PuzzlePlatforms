@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
 
+	UFUNCTION(BlueprintCallable)
+	void LoadInGameMenu();
+
 	UFUNCTION(Exec)
 	virtual void Host() const override;
 
@@ -30,7 +33,10 @@ public:
 	virtual void Join(const FString& Address) const override;
 
 private:
-	TSubclassOf<class UUserWidget> MenuClass;
-	class UMainMenu* MainMenu;
+	TSubclassOf<class UMenuWidget> MenuClass;
+	TSubclassOf<class UMenuWidget> InGameMenuClass;
+
+	class UMenuWidget* MainMenu;
+	class UMenuWidget* InGameMenu;
 
 };

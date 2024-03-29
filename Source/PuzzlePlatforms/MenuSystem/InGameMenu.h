@@ -3,15 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "MenuWidget.h"
+#include "MenuInterface.h"
 #include "InGameMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_API UInGameMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UInGameMenu : public UMenuWidget
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(meta = (BindWidget))
+	class UButton* CancelButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* QuitButton;
+
+	UFUNCTION()
+	void CancelPressed();
+
+	UFUNCTION()
+	void QuitPressed();
+
+protected:
+	virtual bool Initialize() override;
 	
 };
