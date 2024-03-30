@@ -25,4 +25,5 @@ public:
 	virtual void Host() const = 0;
 	virtual void Join(const FString& Address) const = 0;
 	virtual void LoadMainMenu() const = 0;
+	virtual void QuitGame() const = 0;
 };

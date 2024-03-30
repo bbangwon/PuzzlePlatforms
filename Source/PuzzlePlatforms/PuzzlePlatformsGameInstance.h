@@ -33,6 +33,7 @@ public:
 	virtual void Join(const FString& Address) const override;
 
 	virtual void LoadMainMenu() const override;
+	virtual void QuitGame() const override;
 
 private:
 	TSubclassOf<class UMenuWidget> MenuClass;
