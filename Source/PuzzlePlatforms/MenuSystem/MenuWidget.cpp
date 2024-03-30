@@ -33,7 +33,7 @@ void UMenuWidget::Setup()
 
 void UMenuWidget::Teardown()
 {
-	RemoveFromViewport();
+	RemoveFromParent();
 
 	UWorld* World = GetWorld();
 	if (!ensure(World != nullptr)) return;

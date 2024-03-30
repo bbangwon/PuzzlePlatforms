@@ -16,7 +16,7 @@ bool UInGameMenu::Initialize()
 	if (!ensure(QuitButton != nullptr)) return false;
 	QuitButton->OnClicked.AddDynamic(this, &UInGameMenu::QuitPressed);
 
-	return false;
+	return true;
 }
 
 void UInGameMenu::CancelPressed()
@@ -27,6 +27,11 @@ void UInGameMenu::CancelPressed()
 void UInGameMenu::QuitPressed()
 {
 	UE_LOG(LogTemp, Display, TEXT("Quit Game!"));
+	if (MenuInterface != nullptr)
+	{
+		Teardown();
+		MenuInterface->LoadMainMenu();
+	}
 }
 
 

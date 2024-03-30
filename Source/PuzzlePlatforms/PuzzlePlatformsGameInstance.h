@@ -32,11 +32,13 @@ public:
 	UFUNCTION(Exec)
 	virtual void Join(const FString& Address) const override;
 
+	virtual void LoadMainMenu() const override;
+
 private:
 	TSubclassOf<class UMenuWidget> MenuClass;
 	TSubclassOf<class UMenuWidget> InGameMenuClass;
 
-	class UMenuWidget* MainMenu;
-	class UMenuWidget* InGameMenu;
+	class UMenuWidget* MainMenu = nullptr;
+	class UMenuWidget* InGameMenu = nullptr;
 
 };

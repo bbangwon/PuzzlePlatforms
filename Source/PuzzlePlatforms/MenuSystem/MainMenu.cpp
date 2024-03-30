@@ -51,6 +51,7 @@ void UMainMenu::HostServer()
 {
 	if (MenuInterface != nullptr)
 	{
+		Teardown();
 		MenuInterface->Host();
 	}
 }
@@ -59,6 +60,7 @@ void UMainMenu::JoinServer()
 {
 	if (MenuInterface != nullptr)
 	{
+		Teardown();
 		if (!ensure(IPAddressField != nullptr)) return;
 		const FString& Address = IPAddressField->GetText().ToString();
 

@@ -52,11 +52,6 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 
 void UPuzzlePlatformsGameInstance::Host() const
 {
-	if(MainMenu != nullptr)
-	{
-		MainMenu->Teardown();
-	}
-
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
 
@@ -64,16 +59,11 @@ void UPuzzlePlatformsGameInstance::Host() const
 	if(!ensure(World != nullptr)) return;
 
 	// ?listen을 붙이면 서버로서 동작하게 된다.
-	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");
+	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");	
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
 {
-	if (MainMenu != nullptr)
-	{
-		MainMenu->Teardown();
-	}
-
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
 
@@ -81,4 +71,15 @@ void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
 	if(!ensure(PlayerController != nullptr)) return;
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformsGameInstance::LoadMainMenu() const
+{
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("LoadMainMenu"));
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", ETravelType::TRAVEL_Absolute);
 }
