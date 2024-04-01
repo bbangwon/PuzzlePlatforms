@@ -6,6 +6,8 @@
 #include "PlatformTrigger.h"
 #include "MenuSystem/MenuWidget.h"
 
+#include "OnlineSubsystem.h"
+
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
 	//생성자는 언리얼 에디터에서도 실행되지만, Init은 게임이 시작될 때 실행된다.
@@ -25,6 +27,18 @@ void UPuzzlePlatformsGameInstance::Init()
 {
 	Super::Init();
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
+
+	//싱글턴 포인터 반환
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();	
+
+	if (Subsystem != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found OnlineSubsystem %s"), *Subsystem->GetSubsystemName().ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystem is nullptr"));
+	}
 }
 
 void UPuzzlePlatformsGameInstance::LoadMenu()
