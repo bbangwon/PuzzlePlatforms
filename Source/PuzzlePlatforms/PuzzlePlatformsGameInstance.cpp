@@ -9,6 +9,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 
+const static FName SESSION_NAME = TEXT("My Session Game");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -40,6 +41,7 @@ void UPuzzlePlatformsGameInstance::Init()
 
 		//델리게이트는 여기서 설정
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
+		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 	}
 	else
 	{
@@ -47,6 +49,7 @@ void UPuzzlePlatformsGameInstance::Init()
 	}
 }
 
+//세션 생성이 완료되면 호출
 void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bool Success) const
 {
 	if (!Success)
@@ -70,6 +73,21 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bo
 	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");
 }	
 
+//서버가 세션을 파괴하면 다시 세션을 생성한다.
+void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, bool Success) const
+{
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not destroy session"));
+		return;
+	}
+	else
+	{
+		CreateSession();
+	}
+}
+
+
 void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if(!ensure(MenuClass != nullptr)) return;
@@ -92,14 +110,30 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 	InGameMenu->SetMenuInterface(this);
 }
 
+void UPuzzlePlatformsGameInstance::CreateSession() const
+{
+	if(SessionInterface == nullptr) return;
+
+	FOnlineSessionSettings SessionSettings;
+	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+}
+
 
 void UPuzzlePlatformsGameInstance::Host() const
 {
 	if (SessionInterface == nullptr)
 		return;
-
-	FOnlineSessionSettings SessionSettings;
-	SessionInterface->CreateSession(0, TEXT("My Session Game"), SessionSettings);
+	
+	//세션을 생성하기 전에 기존 세션이 있는지 확인한다.
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+	if (ExistingSession != nullptr)
+	{ 
+		SessionInterface->DestroySession(SESSION_NAME);
+	}
+	else
+	{
+		CreateSession();
+	}
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
