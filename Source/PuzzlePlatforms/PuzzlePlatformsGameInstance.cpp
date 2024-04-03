@@ -7,6 +7,8 @@
 #include "MenuSystem/MenuWidget.h"
 
 #include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -34,17 +36,39 @@ void UPuzzlePlatformsGameInstance::Init()
 	if (Subsystem != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found OnlineSubsystem %s"), *Subsystem->GetSubsystemName().ToString());
-		IOnlineSessionPtr SessionInterface = Subsystem->GetSessionInterface();
-		if (SessionInterface != nullptr)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Found SessionInterface"));
-		}
+		SessionInterface = Subsystem->GetSessionInterface();
+
+		//델리게이트는 여기서 설정
+		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystem is nullptr"));
 	}
 }
+
+void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bool Success) const
+{
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not create session"));
+		return;
+	}
+
+	if (MainMenu != nullptr)
+	{
+		MainMenu->Teardown();
+	}
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
+
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr)) return;
+
+	// ?listen을 붙이면 서버로서 동작하게 된다.
+	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");
+}	
 
 void UPuzzlePlatformsGameInstance::LoadMenu()
 {
@@ -71,14 +95,11 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 
 void UPuzzlePlatformsGameInstance::Host() const
 {
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Hosting"));
+	if (SessionInterface == nullptr)
+		return;
 
-	UWorld* World = GetWorld();
-	if(!ensure(World != nullptr)) return;
-
-	// ?listen을 붙이면 서버로서 동작하게 된다.
-	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");	
+	FOnlineSessionSettings SessionSettings;
+	SessionInterface->CreateSession(0, TEXT("My Session Game"), SessionSettings);
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address) const

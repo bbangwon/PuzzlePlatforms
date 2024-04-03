@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "MenuSystem/MenuInterface.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "PuzzlePlatformsGameInstance.generated.h"
 
 /**
@@ -35,11 +36,16 @@ public:
 	virtual void LoadMainMenu() const override;
 	virtual void QuitGame() const override;
 
+
 private:
 	TSubclassOf<class UMenuWidget> MenuClass;
 	TSubclassOf<class UMenuWidget> InGameMenuClass;
 
 	class UMenuWidget* MainMenu = nullptr;
 	class UMenuWidget* InGameMenu = nullptr;
+
+	IOnlineSessionPtr SessionInterface;
+
+	void OnCreateSessionComplete(FName SessionName, bool Success) const;
 
 };
