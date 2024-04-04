@@ -45,9 +45,11 @@ private:
 	class UMenuWidget* InGameMenu = nullptr;
 
 	IOnlineSessionPtr SessionInterface;
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
 
 	void OnCreateSessionComplete(FName SessionName, bool Success) const;
 	void OnDestroySessionComplete(FName SessionName, bool Success) const;
+	void OnFindSessionsComplete(bool Success) const;
 
 	void CreateSession() const;
 

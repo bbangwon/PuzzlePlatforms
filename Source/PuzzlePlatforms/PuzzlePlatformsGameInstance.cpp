@@ -42,11 +42,24 @@ void UPuzzlePlatformsGameInstance::Init()
 		//델리게이트는 여기서 설정
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
+
+		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionsComplete);
+
+		SessionSearch = MakeShareable(new FOnlineSessionSearch());
+		if (SessionSearch.IsValid())
+		{
+			SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystem is nullptr"));
 	}
+}
+
+void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete Called"));
 }
 
 //세션 생성이 완료되면 호출
