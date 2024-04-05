@@ -47,7 +47,7 @@ void UPuzzlePlatformsGameInstance::Init()
 
 		SessionSearch = MakeShareable(new FOnlineSessionSearch());
 		if (SessionSearch.IsValid())
-		{
+		{		
 			SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 		}
 	}
@@ -60,6 +60,19 @@ void UPuzzlePlatformsGameInstance::Init()
 void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete Called"));
+	if (Success && SessionSearch.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Find Session Complete"));
+
+		for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
+		{
+			FString SessionName = Result.GetSessionIdStr();
+			uint32 HostNum = Result.Session.NumOpenPublicConnections;
+			FString HostName = Result.Session.OwningUserName;
+
+			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s, HostNum: %d, HostName: %s"), *SessionName, HostNum, *HostName);
+		}
+	}
 }
 
 //세션 생성이 완료되면 호출
@@ -128,6 +141,9 @@ void UPuzzlePlatformsGameInstance::CreateSession() const
 	if(SessionInterface == nullptr) return;
 
 	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bIsLANMatch = true;	//로컬 네트워크에서 사용
+	SessionSettings.NumPublicConnections = 2;	//최대 2명까지 접속 가능
+	SessionSettings.bShouldAdvertise = true;	//다른 플레이어에게 보여지도록 설정
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
