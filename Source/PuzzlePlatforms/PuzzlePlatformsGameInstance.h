@@ -31,7 +31,7 @@ public:
 	virtual void Host() const override;
 
 	UFUNCTION(Exec)
-	virtual void Join(const FString& Address) const override;
+	virtual void Join(const uint32 Index) const override;
 
 	virtual void LoadMainMenu() const override;
 	virtual void QuitGame() const override;
@@ -52,6 +52,7 @@ private:
 	void OnCreateSessionComplete(FName SessionName, bool Success) const;
 	void OnDestroySessionComplete(FName SessionName, bool Success) const;
 	void OnFindSessionsComplete(bool Success) const;
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result) const;
 
 	void CreateSession() const;
 

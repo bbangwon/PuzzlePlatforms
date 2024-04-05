@@ -46,6 +46,7 @@ void UPuzzlePlatformsGameInstance::Init()
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionsComplete);
+		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnJoinSessionComplete);
 		
 	}
 	else
@@ -83,6 +84,28 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 
 		MainMenu->SetServerList(ServerNames);
 	}
+}
+
+//세션에 접속이 완료되면 호출
+void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result) const
+{
+	if(Result != EOnJoinSessionCompleteResult::Success) return;
+	if (!SessionInterface.IsValid()) return;
+
+	FString Address;
+	if (!SessionInterface->GetResolvedConnectString(SessionName, Address))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not get connect string"));
+		return;
+	}
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }
 
 //세션 생성이 완료되면 호출
@@ -160,8 +183,12 @@ void UPuzzlePlatformsGameInstance::CreateSession() const
 
 void UPuzzlePlatformsGameInstance::Host() const
 {
-	if (SessionInterface == nullptr)
-		return;
+	if (SessionInterface == nullptr) return;
+
+	if (MainMenu != nullptr)
+	{
+		MainMenu->Teardown();
+	}
 	
 	//세션을 생성하기 전에 기존 세션이 있는지 확인한다.
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
@@ -175,15 +202,17 @@ void UPuzzlePlatformsGameInstance::Host() const
 	}
 }
 
-void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
+void UPuzzlePlatformsGameInstance::Join(const uint32 Index) const
 {
-	//if(GEngine)
-	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
+	if(!SessionInterface.IsValid()) return;
+	if(!SessionSearch.IsValid()) return;
 
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-	//if(!ensure(PlayerController != nullptr)) return;
+	if (MainMenu != nullptr)
+	{
+		MainMenu->Teardown();
+	}
 
-	//PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
 }
 
 void UPuzzlePlatformsGameInstance::LoadMainMenu() const

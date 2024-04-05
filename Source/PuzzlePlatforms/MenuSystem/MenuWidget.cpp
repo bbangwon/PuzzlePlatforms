@@ -47,7 +47,7 @@ void UMenuWidget::Teardown()
 	//이 함수 하나로 처리 할수도 있음 
 	//UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController, this);
 
-	PlayerController->bShowMouseCursor = false;
+	PlayerController->bShowMouseCursor = false;	
 }
 
 

@@ -64,7 +64,6 @@ void UMainMenu::HostServer()
 {
 	if (MenuInterface != nullptr)
 	{
-		Teardown();
 		MenuInterface->Host();
 	}
 }
@@ -95,24 +94,20 @@ void UMainMenu::SelectIndex(uint32 Index)
 
 void UMainMenu::JoinServer()
 {
-	if (SelectedIndex.IsSet())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Selected index %d"), SelectedIndex.GetValue());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Selected index not set"));
-	}
-
 	if (MenuInterface != nullptr)
 	{	
-		//Teardown();		
+		if (SelectedIndex.IsSet())
+		{
+			uint32 SelectedIndexValue = SelectedIndex.GetValue();
+			SelectedIndex.Reset();
 
-		
-		//if (!ensure(IPAddressField != nullptr)) return;
-		//const FString& Address = IPAddressField->GetText().ToString();
-
-		MenuInterface->Join("");
+			UE_LOG(LogTemp, Warning, TEXT("Selected index %d"), SelectedIndexValue);
+			MenuInterface->Join(SelectedIndexValue);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Selected index not set"));
+		}
 	}
 }
 
@@ -124,13 +119,13 @@ void UMainMenu::OpenJoinMenu()
 	MenuSwitcher->SetActiveWidget(JoinMenu);
 
 	//JoinMenu 가 열리면 서버 리스트를 갱신한다.
-	//if (MenuInterface != nullptr)
-	//{
-	//	MenuInterface->RefreshServerList();
-	//}
+	if (MenuInterface != nullptr)
+	{
+		MenuInterface->RefreshServerList();
+	}
 
 	//테스트
-	SetServerList({ "Test1", "Test2" });
+	//SetServerList({ "Test1", "Test2" });
 }
 
 void UMainMenu::OpenMainMenu()
