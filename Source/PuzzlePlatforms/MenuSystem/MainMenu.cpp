@@ -73,20 +73,37 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 {
 	ServerList->ClearChildren();
 
+	uint32 i = 0;
 	for (const FString& ServerName : ServerNames)
 	{
 		UServerRow* ServerRow = CreateWidget<UServerRow>(ServerList, ServerRowClass);
 		if (ServerRow != nullptr)
 		{
 			ServerRow->ServerName->SetText(FText::FromString(ServerName));
+			ServerRow->Setup(this, i++);
+
 			ServerList->AddChild(ServerRow);
 		}
 	}
 }
 
+void UMainMenu::SelectIndex(uint32 Index)
+{
+	SelectedIndex = Index;
+}
+
 
 void UMainMenu::JoinServer()
 {
+	if (SelectedIndex.IsSet())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Selected index %d"), SelectedIndex.GetValue());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Selected index not set"));
+	}
+
 	if (MenuInterface != nullptr)
 	{	
 		//Teardown();		
@@ -106,10 +123,14 @@ void UMainMenu::OpenJoinMenu()
 
 	MenuSwitcher->SetActiveWidget(JoinMenu);
 
-	if (MenuInterface != nullptr)
-	{
-		MenuInterface->RefreshServerList();
-	}
+	//JoinMenu 가 열리면 서버 리스트를 갱신한다.
+	//if (MenuInterface != nullptr)
+	//{
+	//	MenuInterface->RefreshServerList();
+	//}
+
+	//테스트
+	SetServerList({ "Test1", "Test2" });
 }
 
 void UMainMenu::OpenMainMenu()

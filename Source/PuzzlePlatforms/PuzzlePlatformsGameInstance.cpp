@@ -177,11 +177,6 @@ void UPuzzlePlatformsGameInstance::Host() const
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
 {
-	if (MainMenu != nullptr)
-	{
-		MainMenu->SetServerList({"Test1", "Test2"});
-	}
-
 	//if(GEngine)
 	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
 
