@@ -15,6 +15,9 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
+public:
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
+
 protected:
 	virtual bool Initialize() override;	
 	//virtual void NativeConstruct() override;
@@ -47,7 +50,9 @@ private:
 	class UButton* CancelJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
-	class UEditableTextBox* IPAddressField;
+	class UPanelWidget* ServerList;
+
+	TSubclassOf<class UUserWidget> ServerRowClass;
 
 	UFUNCTION()
 	void HostServer();
