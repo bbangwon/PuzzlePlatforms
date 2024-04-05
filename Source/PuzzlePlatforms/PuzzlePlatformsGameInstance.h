@@ -36,13 +36,15 @@ public:
 	virtual void LoadMainMenu() const override;
 	virtual void QuitGame() const override;
 
+	virtual void RefreshServerList() override;
+
 
 private:
-	TSubclassOf<class UMenuWidget> MenuClass;
-	TSubclassOf<class UMenuWidget> InGameMenuClass;
+	TSubclassOf<class UMainMenu> MenuClass;
+	TSubclassOf<class UInGameMenu> InGameMenuClass;
 
-	class UMenuWidget* MainMenu = nullptr;
-	class UMenuWidget* InGameMenu = nullptr;
+	class UMainMenu* MainMenu = nullptr;
+	class UInGameMenu* InGameMenu = nullptr;
 
 	IOnlineSessionPtr SessionInterface;
 	TSharedPtr<class FOnlineSessionSearch> SessionSearch;

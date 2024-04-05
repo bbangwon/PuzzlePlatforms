@@ -4,7 +4,9 @@
 #include "PuzzlePlatformsGameInstance.h"
 #include "UObject/ConstructorHelpers.h"
 #include "PlatformTrigger.h"
-#include "MenuSystem/MenuWidget.h"
+
+#include "MenuSystem/MainMenu.h"
+#include "MenuSystem/InGameMenu.h"
 
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
@@ -15,12 +17,12 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 {
 	//생성자는 언리얼 에디터에서도 실행되지만, Init은 게임이 시작될 때 실행된다.
 	
-	ConstructorHelpers::FClassFinder<UMenuWidget> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
+	ConstructorHelpers::FClassFinder<UMainMenu> MenuBPClass(TEXT("/Game/MenuSystem/WBP_MainMenu"));
 	if(!ensure(MenuBPClass.Class != nullptr)) return;
 
 	MenuClass = MenuBPClass.Class;	
 
-	ConstructorHelpers::FClassFinder<UMenuWidget> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
+	ConstructorHelpers::FClassFinder<UInGameMenu> InGameMenuBPClass(TEXT("/Game/MenuSystem/WBP_InGameMenu"));
 	if(!ensure(InGameMenuBPClass.Class != nullptr)) return;
 
 	InGameMenuClass = InGameMenuBPClass.Class;
@@ -44,12 +46,7 @@ void UPuzzlePlatformsGameInstance::Init()
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionsComplete);
-
-		SessionSearch = MakeShareable(new FOnlineSessionSearch());
-		if (SessionSearch.IsValid())
-		{		
-			SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
-		}
+		
 	}
 	else
 	{
@@ -57,21 +54,34 @@ void UPuzzlePlatformsGameInstance::Init()
 	}
 }
 
+void UPuzzlePlatformsGameInstance::RefreshServerList()
+{
+	SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	if (SessionSearch.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
+		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	}
+}
+
 void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnFindSessionsComplete Called"));
-	if (Success && SessionSearch.IsValid())
+	if (Success && SessionSearch.IsValid() && MainMenu != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Find Session Complete"));
+
+		TArray<FString> ServerNames;
 
 		for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
 		{
 			FString SessionName = Result.GetSessionIdStr();
-			uint32 HostNum = Result.Session.NumOpenPublicConnections;
-			FString HostName = Result.Session.OwningUserName;
 
-			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s, HostNum: %d, HostName: %s"), *SessionName, HostNum, *HostName);
+			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s"), *SessionName);
+
+			ServerNames.Add(SessionName);
 		}
+
+		MainMenu->SetServerList(ServerNames);
 	}
 }
 
@@ -118,7 +128,7 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if(!ensure(MenuClass != nullptr)) return;
 
-	MainMenu = CreateWidget<UMenuWidget>(this, MenuClass);
+	MainMenu = CreateWidget<UMainMenu>(this, MenuClass);
 	if(!ensure(MainMenu != nullptr)) return;
 
 	MainMenu->Setup();
@@ -129,7 +139,7 @@ void UPuzzlePlatformsGameInstance::LoadInGameMenu()
 {
 	if(!ensure(InGameMenuClass != nullptr)) return;
 
-	InGameMenu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
+	InGameMenu = CreateWidget<UInGameMenu>(this, InGameMenuClass);
 	if(!ensure(InGameMenu != nullptr)) return;
 
 	InGameMenu->Setup();
@@ -167,13 +177,18 @@ void UPuzzlePlatformsGameInstance::Host() const
 
 void UPuzzlePlatformsGameInstance::Join(const FString& Address) const
 {
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
+	if (MainMenu != nullptr)
+	{
+		MainMenu->SetServerList({"Test1", "Test2"});
+	}
 
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-	if(!ensure(PlayerController != nullptr)) return;
+	//if(GEngine)
+	//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Joining %s"), *Address));
 
-	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+	//APlayerController* PlayerController = GetFirstLocalPlayerController();
+	//if(!ensure(PlayerController != nullptr)) return;
+
+	//PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
 }
 
 void UPuzzlePlatformsGameInstance::LoadMainMenu() const
@@ -197,3 +212,5 @@ void UPuzzlePlatformsGameInstance::QuitGame() const
 
 	PlayerController->ConsoleCommand("quit");
 }
+
+
