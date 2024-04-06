@@ -68,17 +68,21 @@ void UMainMenu::HostServer()
 	}
 }
 
-void UMainMenu::SetServerList(TArray<FString> ServerNames)
+void UMainMenu::SetServerList(TArray<FServerData> ServerDatas)
 {
 	ServerList->ClearChildren();
 
 	uint32 i = 0;
-	for (const FString& ServerName : ServerNames)
+	for (const FServerData& ServerData : ServerDatas)
 	{
 		UServerRow* ServerRow = CreateWidget<UServerRow>(ServerList, ServerRowClass);
 		if (ServerRow != nullptr)
-		{
-			ServerRow->ServerName->SetText(FText::FromString(ServerName));
+		{			
+			ServerRow->ServerName->SetText(FText::FromString(ServerData.Name));
+			ServerRow->HostUser->SetText(FText::FromString(ServerData.HostUsername));
+
+			FString PlayerCount = FString::Printf(TEXT("%d/%d"), ServerData.CurrentPlayers, ServerData.MaxPlayers);
+			ServerRow->ConnectionFraction->SetText(FText::FromString(PlayerCount));
 			ServerRow->Setup(this, i++);
 
 			ServerList->AddChild(ServerRow);

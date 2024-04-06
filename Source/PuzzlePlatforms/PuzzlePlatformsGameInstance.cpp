@@ -62,7 +62,6 @@ void UPuzzlePlatformsGameInstance::RefreshServerList()
 	if (SessionSearch.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
-		SessionSearch->bIsLanQuery = false;	//로컬 네트워크에서 사용
 		SessionSearch->MaxSearchResults = 100;	//최대 100개의 세션을 찾음
 		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);	//현재 지역에 세션 표시
 
@@ -76,20 +75,23 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Find Session Complete"));
 
-		TArray<FString> ServerNames;
-		ServerNames.Add(TEXT("Test Server 1"));
-		ServerNames.Add(TEXT("Test Server 2"));
-		ServerNames.Add(TEXT("Test Server 3"));
+		TArray<FServerData> ServerDatas;
 		for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
-		{
+		{		
 			FString SessionName = Result.GetSessionIdStr();
 
-			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s"), *SessionName);
+			FServerData Data;
+			Data.Name = SessionName;
+			Data.CurrentPlayers = Result.Session.NumOpenPublicConnections;
+			Data.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+			Data.HostUsername = Result.Session.OwningUserName;
 
-			ServerNames.Add(SessionName);
+			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s, HostUsername: %s, %d/%d"), *Data.Name, *Data.HostUsername, Data.CurrentPlayers, Data.MaxPlayers);
+
+			ServerDatas.Add(Data);
 		}
 
-		MainMenu->SetServerList(ServerNames);
+		MainMenu->SetServerList(ServerDatas);
 	}
 }
 
@@ -181,7 +183,16 @@ void UPuzzlePlatformsGameInstance::CreateSession() const
 	if(SessionInterface == nullptr) return;
 
 	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = false;	//로컬 네트워크에서 사용
+
+	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+	{
+		SessionSettings.bIsLANMatch = true;	//로컬 네트워크에서 사용
+	}
+	else
+	{
+		SessionSettings.bIsLANMatch = false;
+	}
+
 	SessionSettings.NumPublicConnections = 2;	//최대 2명까지 접속 가능
 	SessionSettings.bShouldAdvertise = true;	//다른 플레이어에게 보여지도록 설정
 	SessionSettings.bUsesPresence = true;	//현재 지역에 세션 표시
