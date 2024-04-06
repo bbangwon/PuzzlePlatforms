@@ -10,6 +10,7 @@
 
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineSessionNames.h"
 
 const static FName SESSION_NAME = TEXT("My Session Game");
 
@@ -61,6 +62,10 @@ void UPuzzlePlatformsGameInstance::RefreshServerList()
 	if (SessionSearch.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Starting Find Session"));
+		SessionSearch->bIsLanQuery = false;	//로컬 네트워크에서 사용
+		SessionSearch->MaxSearchResults = 100;	//최대 100개의 세션을 찾음
+		SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);	//현재 지역에 세션 표시
+
 		SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 	}
 }
@@ -174,9 +179,11 @@ void UPuzzlePlatformsGameInstance::CreateSession() const
 	if(SessionInterface == nullptr) return;
 
 	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = true;	//로컬 네트워크에서 사용
+	SessionSettings.bIsLANMatch = false;	//로컬 네트워크에서 사용
 	SessionSettings.NumPublicConnections = 2;	//최대 2명까지 접속 가능
 	SessionSettings.bShouldAdvertise = true;	//다른 플레이어에게 보여지도록 설정
+	SessionSettings.bUsesPresence = true;	//현재 지역에 세션 표시
+	SessionSettings.bUseLobbiesIfAvailable = true; //로비를 사용하여 플레이어가 게임에 접속할 수 있도록 함
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
