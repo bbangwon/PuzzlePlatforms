@@ -1,1 +1,1 @@
-"C:\Program Files\Epic Games\UE_5.3\Engine\Binaries\Win64\UnrealEditor.exe" "C:\workspace\study\unreal\PuzzlePlatforms\PuzzlePlatforms.uproject" -game -log
+"C:\Program Files\Epic Games\UE_5.3\Engine\Binaries\Win64\UnrealEditor.exe" "C:\workspace\study\unreal\PuzzlePlatforms\PuzzlePlatforms.uproject" -game -log -ResX=1280 -ResY=720 -windowed

@@ -28,7 +28,7 @@ public:
 	void LoadInGameMenu();
 
 	UFUNCTION(Exec)
-	virtual void Host() const override;
+	virtual void Host(const FString ServerName) override;
 
 	UFUNCTION(Exec)
 	virtual void Join(const uint32 Index) const override;
@@ -55,5 +55,7 @@ private:
 	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result) const;
 
 	void CreateSession() const;
+
+	FString DesiredServerName;
 
 };

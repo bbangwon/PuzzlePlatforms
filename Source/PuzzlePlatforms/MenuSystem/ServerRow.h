@@ -36,7 +36,7 @@ private:
 	UFUNCTION()
 	void OnClicked();
 
-	UPROPERTY()	//°¡ºñÁö ÄÝ·ºÅÍ°¡ Ã³¸®ÇÒ ¼ö ÀÖµµ·Ï
+	UPROPERTY()	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý·ï¿½ï¿½Í°ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½
 	class UMainMenu* ParentMenu;
 
 	uint32 RowIndex;

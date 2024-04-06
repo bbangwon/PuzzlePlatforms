@@ -33,7 +33,6 @@ public:
 
 	void SelectIndex(uint32 Index);
 
-
 protected:
 	virtual bool Initialize() override;	
 	//virtual void NativeConstruct() override;
@@ -44,6 +43,7 @@ private:
 	class UWidgetSwitcher* MenuSwitcher;
 
 	
+#pragma region MainMenu
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* MainMenu;
 
@@ -55,7 +55,26 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* QuitButton;
+#pragma endregion
 
+
+#pragma region HostMenu
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* HostMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* ServerName;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ConfirmHostMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* CancelHostMenuButton;
+#pragma endregion
+
+
+
+#pragma region JoinMenu
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* JoinMenu;
 
@@ -69,6 +88,8 @@ private:
 	class UPanelWidget* ServerList;
 
 	TSubclassOf<class UUserWidget> ServerRowClass;
+#pragma endregion
+
 
 	UFUNCTION()
 	void HostServer();
@@ -83,9 +104,13 @@ private:
 	void OpenMainMenu();
 
 	UFUNCTION()
+	void OpenHostMenu();
+
+	UFUNCTION()
 	void QuitGame();
 
 	TOptional<uint32> SelectedIndex;
-
+	
 	void UpdateChildren();
+	
 };

@@ -9,10 +9,12 @@
 #include "MenuSystem/InGameMenu.h"
 
 #include "OnlineSubsystem.h"
+#include "OnlineSubsystemTypes.h"
 #include "OnlineSessionSettings.h"
 #include "Online/OnlineSessionNames.h"
 
 const static FName SESSION_NAME = TEXT("My Session Game");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -78,14 +80,21 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 
 		TArray<FServerData> ServerDatas;
 		for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
-		{		
-			FString SessionName = Result.GetSessionIdStr();
-
+		{	
 			FServerData Data;
-			Data.Name = SessionName;
 			Data.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
 			Data.CurrentPlayers = Data.MaxPlayers - Result.Session.NumOpenPublicConnections;
 			Data.HostUsername = Result.Session.OwningUserName;
+
+			FString SessionName;			
+			if (Result.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, SessionName))
+			{
+				Data.Name = SessionName;
+			}
+			else
+			{
+				Data.Name = "이름없음";
+			}
 
 			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s, HostUsername: %s, %d/%d"), *Data.Name, *Data.HostUsername, Data.CurrentPlayers, Data.MaxPlayers);
 
@@ -198,11 +207,20 @@ void UPuzzlePlatformsGameInstance::CreateSession() const
 	SessionSettings.bShouldAdvertise = true;	//다른 플레이어에게 보여지도록 설정
 	SessionSettings.bUsesPresence = true;	//현재 지역에 세션 표시
 	SessionSettings.bUseLobbiesIfAvailable = true; //로비를 사용하여 플레이어가 게임에 접속할 수 있도록 함
+
+	if (MainMenu != nullptr)
+	{
+		if (!DesiredServerName.IsEmpty())
+		{
+			SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);	//세션에 데이터 추가
+		}
+	}
+
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 }
 
 
-void UPuzzlePlatformsGameInstance::Host() const
+void UPuzzlePlatformsGameInstance::Host(const FString ServerName)
 {
 	if (SessionInterface == nullptr) return;
 
@@ -210,6 +228,8 @@ void UPuzzlePlatformsGameInstance::Host() const
 	{
 		MainMenu->Teardown();
 	}
+
+	DesiredServerName = ServerName;
 	
 	//세션을 생성하기 전에 기존 세션이 있는지 확인한다.
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);

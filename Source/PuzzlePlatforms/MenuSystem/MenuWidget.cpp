@@ -24,10 +24,10 @@ void UMenuWidget::Setup()
 
 	PlayerController->SetInputMode(InputModeData);
 
-	//ÀÌ ÇÔ¼ö ÇÏ³ª·Î Ã³¸® ÇÒ¼öµµ ÀÖÀ½ 
+	//ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	//UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PlayerController, this);
 
-	//¸¶¿ì½º Ä¿¼­¸¦ º¸ÀÌ°Ô ÇÑ´Ù.
+	//ï¿½ï¿½ï¿½ì½º Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì°ï¿½ ï¿½Ñ´ï¿½.
 	PlayerController->bShowMouseCursor = true;
 }
 
@@ -44,7 +44,7 @@ void UMenuWidget::Teardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 
-	//ÀÌ ÇÔ¼ö ÇÏ³ª·Î Ã³¸® ÇÒ¼öµµ ÀÖÀ½ 
+	//ï¿½ï¿½ ï¿½Ô¼ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ ï¿½Ò¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 	//UWidgetBlueprintLibrary::SetInputMode_GameOnly(PlayerController, this);
 
 	PlayerController->bShowMouseCursor = false;	
