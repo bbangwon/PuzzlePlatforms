@@ -148,7 +148,8 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bo
 	if (!ensure(World != nullptr)) return;
 
 	// ?listen을 붙이면 서버로서 동작하게 된다.
-	World->ServerTravel("/Game/ThirdPerson/Maps/ThirdPersonMap?listen");
+
+	World->ServerTravel("/Game/PuzzlePlatforms/Maps/Lobby?listen");
 }	
 
 //서버가 세션을 파괴하면 다시 세션을 생성한다.
