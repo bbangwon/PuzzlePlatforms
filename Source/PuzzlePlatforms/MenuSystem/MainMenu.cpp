@@ -70,8 +70,6 @@ void UMainMenu::HostServer()
 
 void UMainMenu::SetServerList(TArray<FServerData> ServerDatas)
 {
-	ServerList->ClearChildren();
-
 	uint32 i = 0;
 	for (const FServerData& ServerData : ServerDatas)
 	{
@@ -138,6 +136,7 @@ void UMainMenu::OpenJoinMenu()
 	//JoinMenu 가 열리면 서버 리스트를 갱신한다.
 	if (MenuInterface != nullptr)
 	{
+		ServerList->ClearChildren();
 		MenuInterface->RefreshServerList();
 	}
 

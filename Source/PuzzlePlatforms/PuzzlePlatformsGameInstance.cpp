@@ -58,6 +58,7 @@ void UPuzzlePlatformsGameInstance::Init()
 
 void UPuzzlePlatformsGameInstance::RefreshServerList()
 {
+
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
 	if (SessionSearch.IsValid())
 	{
@@ -82,8 +83,8 @@ void UPuzzlePlatformsGameInstance::OnFindSessionsComplete(bool Success) const
 
 			FServerData Data;
 			Data.Name = SessionName;
-			Data.CurrentPlayers = Result.Session.NumOpenPublicConnections;
 			Data.MaxPlayers = Result.Session.SessionSettings.NumPublicConnections;
+			Data.CurrentPlayers = Data.MaxPlayers - Result.Session.NumOpenPublicConnections;
 			Data.HostUsername = Result.Session.OwningUserName;
 
 			UE_LOG(LogTemp, Warning, TEXT("SessionName: %s, HostUsername: %s, %d/%d"), *Data.Name, *Data.HostUsername, Data.CurrentPlayers, Data.MaxPlayers);
