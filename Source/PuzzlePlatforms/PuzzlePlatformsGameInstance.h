@@ -38,6 +38,8 @@ public:
 
 	virtual void RefreshServerList() override;
 
+	void StartSession();
+
 
 private:
 	TSubclassOf<class UMainMenu> MenuClass;
