@@ -56,6 +56,11 @@ void UPuzzlePlatformsGameInstance::Init()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnlineSubsystem is nullptr"));
 	}
+
+	if (GEngine != nullptr)
+	{
+		GEngine->OnNetworkFailure().AddUObject(this, &UPuzzlePlatformsGameInstance::OnNetworkFailure);
+	}
 }
 
 void UPuzzlePlatformsGameInstance::RefreshServerList()
@@ -133,6 +138,14 @@ void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName SessionName, EOnJ
 	if (!ensure(PlayerController != nullptr)) return;
 
 	PlayerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformsGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString) const
+{
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Network Failure"));
+
+	LoadMainMenu();
 }
 
 //세션 생성이 완료되면 호출
